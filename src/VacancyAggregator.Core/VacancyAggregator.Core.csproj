@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+		<PackageReference Include="AutoMapper" Version="11.0.1" />
+		<PackageReference Include="AutoMapper.Contrib.Autofac.DependencyInjection" Version="6.1.0" />
+	    <PackageReference Include="Autofac" Version="6.4.0" />
+	    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+	    <PackageReference Include="AutoMapper.Extensions.EnumMapping" Version="2.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.2" />
+		<PackageReference Include="NLog" Version="4.7.13" />
+		<PackageReference Include="NLog.Extensions.Logging" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
+	</ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\VacancyAggregator.Data\VacancyAggregator.Data.csproj" />
+    <ProjectReference Include="..\VacancyAggregator.VacancySources.Api\VacancyAggregator.VacancySources.Api.csproj" />
+  </ItemGroup>
+
+</Project>

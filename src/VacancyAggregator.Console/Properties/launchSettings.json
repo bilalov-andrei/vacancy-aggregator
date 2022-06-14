@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "VacancyAggregator.Console": {
+      "commandName": "Project"
+    }
+  }
+}

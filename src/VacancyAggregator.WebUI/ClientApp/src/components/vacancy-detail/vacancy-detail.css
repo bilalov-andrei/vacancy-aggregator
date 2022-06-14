@@ -1,0 +1,33 @@
+.vacancy-detail-container {
+    width: 100%;
+    padding: 5px 10px;
+    height: 90%;
+    border: 1px solid lightblue;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.vacancy-detail {
+    overflow: auto;
+    height: 100%;
+}
+
+.vacancy-detail::-webkit-scrollbar {
+    width: 15px;
+}
+
+.vacancy-detail::-webkit-scrollbar-track {
+    background-color: #CD5C5C;
+}
+
+.vacancy-detail::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.vacancy-detail::-webkit-scrollbar-thumb:hover {
+    background-color: white;
+}
+
+.vacancy-detail::-webkit-scrollbar-thumb:hover {
+    background-color: white;
+}
