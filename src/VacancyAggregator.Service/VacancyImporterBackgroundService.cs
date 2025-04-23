@@ -1,15 +1,15 @@
 using Cronos;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using NLog;
-using VacancyAggregator.Core;
-using VacancyAggregator.Domain.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using VacancyAggregator.Core;
+using VacancyAggregator.Domain.Interfaces;
 
 namespace VacancyAggregator.Service
 {
@@ -17,17 +17,19 @@ namespace VacancyAggregator.Service
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
-        private readonly VacancySourceService _vacancySourceService;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IHostApplicationLifetime _app;
+        private readonly IServiceProvider _serviceProvider;
 
-        public VacancyImporterBackgroundService(IHostApplicationLifetime app, ILogger logger, VacancySourceService service, IConfiguration configuration, IUnitOfWork unitOfWork)
+        public VacancyImporterBackgroundService(
+            IHostApplicationLifetime app,
+            ILogger logger,
+            IConfiguration configuration,
+            IServiceProvider serviceProvider)
         {
             _app = app;
             _logger = logger;
-            _vacancySourceService = service;
             _configuration = configuration;
-            _unitOfWork = unitOfWork;
+            _serviceProvider = serviceProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,27 +40,32 @@ namespace VacancyAggregator.Service
                 {
                     _logger.Info("Worker running at: {time}", DateTimeOffset.Now);
 
-                    var dataSources = _unitOfWork.DataSource.FindByCondition(x => x.IsEnabled && x.IsExternal, false).ToList();
-                    var vacancyFilters = await _unitOfWork.VacancyFilter.GetAllFiltersAsync(false);
+                    using var scope = _serviceProvider.CreateScope();
+
+                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                    var vacancySourceService = scope.ServiceProvider.GetRequiredService<VacancySourceService>();
+
+                    var dataSources = unitOfWork.DataSource.FindByCondition(x => x.IsEnabled && x.IsExternal, false).ToList();
+                    var vacancyFilters = await unitOfWork.VacancyFilter.GetAllFiltersAsync(false);
 
                     foreach (var dataSource in dataSources)
                     {
                         foreach (var vacancyFilter in vacancyFilters)
                         {
-                            _logger.Info($"Импорт вакансий из источника данных Name: {dataSource.Name}, Id: {dataSource.Id} с фильтром {vacancyFilter.Id}");
+                            _logger.Info($"РРјРїРѕСЂС‚ РІР°РєР°РЅСЃРёР№ РёР· РёСЃС‚РѕС‡РЅРёРєР° РґР°РЅРЅС‹С… Name: {dataSource.Name}, Id: {dataSource.Id} СЃ С„РёР»СЊС‚СЂРѕРј {vacancyFilter.Id}");
 
-                            var vacancies = _vacancySourceService.GetVacancies(dataSource, vacancyFilter);
+                            var vacancies = vacancySourceService.GetVacancies(dataSource, vacancyFilter);
 
                             var data = JsonConvert.SerializeObject(vacancies);
                             _logger.Info(data);
 
                             foreach (var vacancy in vacancies)
                             {
-                                _unitOfWork.Vacancy.AddOrUpdate(vacancy);
-                                _unitOfWork.Save();
+                                unitOfWork.Vacancy.AddOrUpdate(vacancy);
+                                unitOfWork.Save();
                             }
 
-                            _logger.Info($"Импорт вакансий из источника данных Name: {dataSource.Name}, Id: {dataSource.Id} с фильтром {vacancyFilter.Id} закончен");
+                            _logger.Info($"РРјРїРѕСЂС‚ РІР°РєР°РЅСЃРёР№ РёР· РёСЃС‚РѕС‡РЅРёРєР° РґР°РЅРЅС‹С… Name: {dataSource.Name}, Id: {dataSource.Id} СЃ С„РёР»СЊС‚СЂРѕРј {vacancyFilter.Id} Р·Р°РєРѕРЅС‡РµРЅ");
                         }
                     }
 
